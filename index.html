@@ -3,301 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>High Quality Background Remover (HD & Smooth Edge)</title>
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.3/dist/browser/bundle.min.js"></script>
+    <title>High Quality Background Remover</title>
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg: #F3F4F6;
-            --panel: #FFFFFF;
-            --text: #1F2937;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h2 { margin-bottom: 5px; text-align: center; }
-        p.subtitle { color: #6B7280; font-size: 14px; text-align: center; margin-bottom: 20px; }
-        
-        .container {
-            background: var(--panel);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-width: 800px;
-            width: 100%;
-        }
-        
-        .upload-area {
-            border: 2px dashed #D1D5DB;
-            border-radius: 8px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 20px;
-            background: #F9FAFB;
-        }
-        .upload-area:hover { border-color: var(--primary); background: #EEF2FF; }
-        .upload-area input { display: none; }
-        
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-            background: #F8FAFC;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #E2E8F0;
-        }
-        .control-group {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        .control-group label {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        
-        .preview-container {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .preview-box {
-            flex: 1;
-            background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" fill="%23ccc"/><rect x="10" width="10" height="10" fill="%23fff"/><rect y="10" width="10" height="10" fill="%23fff"/><rect x="10" y="10" width="10" height="10" fill="%23ccc"/></svg>');
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            overflow: hidden;
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .preview-box img, .preview-box canvas {
-            max-width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-        }
-        .badge {
-            position: absolute;
-            top: 10px; left: 10px;
-            background: rgba(0,0,0,0.6); color: #fff;
-            padding: 4px 8px; border-radius: 4px; font-size: 12px;
-        }
-        
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-        .btn:hover { background-color: var(--primary-hover); }
-        .btn:disabled { background-color: #9CA3AF; cursor: not-allowed; }
-        
-        #loading {
-            display: none;
-            text-align: center;
-            color: var(--primary);
-            font-weight: 600;
-            margin: 10px 0;
-        }
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .upload-box { border: 2px dashed #4F46E5; padding: 40px; cursor: pointer; border-radius: 10px; margin-bottom: 20px; background: #EEF2FF; }
+        .previews { display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+        .preview-item { flex: 1; min-width: 300px; border: 1px solid #ddd; padding: 10px; border-radius: 10px; background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" fill="%23ccc"/><rect x="10" width="10" height="10" fill="%23fff"/><rect y="10" width="10" height="10" fill="%23fff"/><rect x="10" y="10" width="10" height="10" fill="%23ccc"/></svg>'); }
+        img, canvas { max-width: 100%; height: auto; }
+        .controls { background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; }
+        .btn { background: #4F46E5; color: white; border: none; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px;}
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #status { font-weight: bold; color: #d97706; margin-bottom: 15px; }
+        #error-log { color: red; font-size: 14px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>HD Background Remover (Pro)</h2>
-    <p class="subtitle">লোগো এবং হাই-কোয়ালিটি ছবির জন্য ১০০% অরিজিনাল রেজোলিউশন ও স্মুথ এজ সাপোর্ট</p>
-
     <div class="container">
-        <!-- Upload Area -->
-        <div class="upload-area" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <svg width="40" height="40" fill="none" stroke="#6B7280" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <h3>এখানে ছবি আপলোড করুন</h3>
-            <p>অথবা ছবি ড্র্যাগ করে এনে ছেড়ে দিন (JPG, PNG)</p>
-            <input type="file" id="file-input" accept="image/*">
+        <h2>Perfect Background Remover</h2>
+        
+        <div class="upload-box" onclick="document.getElementById('file-input').click()">
+            <h3>এখানে ক্লিক করে ছবি আপলোড করুন</h3>
+            <input type="file" id="file-input" accept="image/*" style="display: none;">
         </div>
 
-        <div id="loading">এআই (AI) কাজ করছে, দয়া করে অপেক্ষা করুন... (প্রথমবার একটু সময় লাগতে পারে)</div>
+        <div id="status"></div>
+        <div id="error-log"></div>
 
-        <!-- Controls for Logo Edges -->
         <div class="controls">
-            <div class="control-group">
-                <label>Smooth Edge (Feathering) <span id="smooth-val">0 px</span></label>
-                <input type="range" id="smooth-slider" min="0" max="10" step="0.5" value="0">
-                <small style="color:#666; font-size:11px; margin-top:4px;">খাঁজকাটা ভাব দূর করতে বাড়ান।</small>
+            <label><b>Smooth Edge:</b> <span id="smooth-val">0 px</span> (বর্ডার মসৃণ করতে)</label>
+            <input type="range" id="smooth-slider" min="0" max="5" step="0.5" value="0" style="width: 100%;">
+            
+            <br><br>
+            
+            <label><b>Edge Defringe:</b> <span id="choke-val">0 px</span> (সাদা আভা দূর করতে)</label>
+            <input type="range" id="choke-slider" min="0" max="5" step="0.5" value="0" style="width: 100%;">
+        </div>
+
+        <div class="previews">
+            <div class="preview-item">
+                <p>Original</p>
+                <img id="original-img" style="display: none;">
             </div>
-            <div class="control-group">
-                <label>Edge Defringe (Choke) <span id="choke-val">0 px</span></label>
-                <input type="range" id="choke-slider" min="0" max="5" step="0.5" value="0">
-                <small style="color:#666; font-size:11px; margin-top:4px;">অবাঞ্ছিত সাদা বর্ডার দূর করতে বাড়ান।</small>
+            <div class="preview-item">
+                <p>Result</p>
+                <canvas id="result-canvas" style="display: none;"></canvas>
             </div>
         </div>
 
-        <!-- Preview Area -->
-        <div class="preview-container">
-            <div class="preview-box">
-                <div class="badge">Original Image</div>
-                <img id="original-preview" src="" alt="" style="display:none;">
-            </div>
-            <div class="preview-box">
-                <div class="badge">HD Result (Transparent)</div>
-                <canvas id="result-canvas" style="display:none;"></canvas>
-            </div>
-        </div>
-
-        <!-- Download -->
         <button id="download-btn" class="btn" disabled>Download Full HD PNG</button>
     </div>
 
-    <script>
+    <!-- ES Module ব্যবহার করে সঠিকভাবে লাইব্রেরি লোড করা হলো -->
+    <script type="module">
+        import imglyRemoveBackground from 'https://unpkg.com/@imgly/background-removal@1.4.3/dist/background-removal.mjs';
+
         const fileInput = document.getElementById('file-input');
-        const originalPreview = document.getElementById('original-preview');
+        const statusDiv = document.getElementById('status');
+        const errorLog = document.getElementById('error-log');
+        const downloadBtn = document.getElementById('download-btn');
+        
+        const originalImg = document.getElementById('original-img');
         const resultCanvas = document.getElementById('result-canvas');
         const ctx = resultCanvas.getContext('2d');
-        const downloadBtn = document.getElementById('download-btn');
-        const loadingDiv = document.getElementById('loading');
         
         const smoothSlider = document.getElementById('smooth-slider');
         const chokeSlider = document.getElementById('choke-slider');
-        const smoothVal = document.getElementById('smooth-val');
-        const chokeVal = document.getElementById('choke-val');
-
+        
         let originalImageObj = new Image();
-        let aiMaskImageObj = new Image();
-        let hasProcessedImage = false;
+        let maskImageObj = new Image();
+        let isReady = false;
 
-        // Sliders Listeners for Real-time Edge Updates
         smoothSlider.addEventListener('input', (e) => {
-            smoothVal.innerText = e.target.value + ' px';
-            if(hasProcessedImage) renderHighQualityResult();
+            document.getElementById('smooth-val').innerText = e.target.value + ' px';
+            if(isReady) applyEffects();
         });
         chokeSlider.addEventListener('input', (e) => {
-            chokeVal.innerText = e.target.value + ' px';
-            if(hasProcessedImage) renderHighQualityResult();
+            document.getElementById('choke-val').innerText = e.target.value + ' px';
+            if(isReady) applyEffects();
         });
 
-        // Handle File Upload
-        fileInput.addEventListener('change', (e) => {
+        fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if (file) {
-                processImage(file);
+            if (!file) return;
+
+            isReady = false;
+            downloadBtn.disabled = true;
+            errorLog.innerText = "";
+            originalImg.style.display = 'block';
+            resultCanvas.style.display = 'none';
+            originalImg.src = URL.createObjectURL(file);
+            originalImageObj.src = originalImg.src;
+
+            statusDiv.innerText = "Processing... (Downloading AI model, please wait)";
+            statusDiv.style.color = "#d97706";
+
+            try {
+                const config = {
+                    publicPath: "https://unpkg.com/@imgly/background-removal@1.4.3/dist/",
+                    progress: (key, current, total) => {
+                        const percent = Math.round((current / total) * 100);
+                        statusDiv.innerText = `Downloading AI Model... ${percent}%`;
+                    }
+                };
+
+                // কল করা হচ্ছে ইমপোর্ট করা ফাংশনটি
+                const blob = await imglyRemoveBackground(file, config);
+                const maskUrl = URL.createObjectURL(blob);
+                
+                maskImageObj.onload = () => {
+                    isReady = true;
+                    statusDiv.innerText = "✅ Background Removed Successfully!";
+                    statusDiv.style.color = "green";
+                    resultCanvas.style.display = 'block';
+                    downloadBtn.disabled = false;
+                    applyEffects();
+                };
+                maskImageObj.src = maskUrl;
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerText = "❌ Processing Failed!";
+                statusDiv.style.color = "red";
+                errorLog.innerText = "Error: " + err.message;
             }
         });
 
-        async function processImage(file) {
-            loadingDiv.style.display = 'block';
-            downloadBtn.disabled = true;
-            hasProcessedImage = false;
-            
-            // 1. Show Original
-            const originalUrl = URL.createObjectURL(file);
-            originalPreview.src = originalUrl;
-            originalPreview.style.display = 'block';
-            
-            originalImageObj.onload = async () => {
-                try {
-                    // 2. Remove Background using imgly (AI)
-                    // কনফিগারেশন সেট করা হয়েছে যাতে অরিজিনাল সাইজ বজায় থাকে
-                    const imageBlob = await imglyRemoveBackground(file, {
-                        progress: (key, current, total) => {
-                            loadingDiv.innerText = `এআই মডেল লোড হচ্ছে... (${Math.round((current/total)*100)}%)`;
-                        }
-                    });
-                    
-                    loadingDiv.innerText = "ফাইনাল প্রসেসিং চলছে...";
-                    const maskUrl = URL.createObjectURL(imageBlob);
-                    
-                    aiMaskImageObj.onload = () => {
-                        hasProcessedImage = true;
-                        renderHighQualityResult();
-                        loadingDiv.style.display = 'none';
-                        downloadBtn.disabled = false;
-                        resultCanvas.style.display = 'block';
-                    };
-                    aiMaskImageObj.src = maskUrl;
-                    
-                } catch (error) {
-                    console.error(error);
-                    loadingDiv.innerText = "Error: ছবিটি প্রসেস করা যায়নি!";
-                    loadingDiv.style.color = "red";
-                }
-            };
-            originalImageObj.src = originalUrl;
-        }
-
-        // Custom HD Renderer for Edge Smoothing & Defringing
-        function renderHighQualityResult() {
-            // Set canvas exact same as original to prevent quality loss
+        function applyEffects() {
             const width = originalImageObj.naturalWidth;
             const height = originalImageObj.naturalHeight;
             resultCanvas.width = width;
             resultCanvas.height = height;
-            
-            const smoothAmount = parseFloat(smoothSlider.value);
-            const chokeAmount = parseFloat(chokeSlider.value);
+
+            const smooth = parseFloat(smoothSlider.value);
+            const choke = parseFloat(chokeSlider.value);
 
             ctx.clearRect(0, 0, width, height);
 
-            // Step A: Draw the AI extracted image (Mask)
-            // If smooth edge is needed, apply canvas filter (Gaussian Blur equivalent on edges)
-            if (smoothAmount > 0) {
-                ctx.filter = `blur(${smoothAmount}px)`;
-            } else {
-                ctx.filter = 'none';
-            }
-            ctx.drawImage(aiMaskImageObj, 0, 0, width, height);
-            ctx.filter = 'none'; // reset
+            ctx.filter = smooth > 0 ? `blur(${smooth}px)` : 'none';
+            ctx.drawImage(maskImageObj, 0, 0, width, height);
+            ctx.filter = 'none';
 
-            // Step B: Masking - Compositing original texture back purely 
-            // So that inside pixels don't get blurred, ONLY the edges get smoothed
             ctx.globalCompositeOperation = 'source-in';
             ctx.drawImage(originalImageObj, 0, 0, width, height);
-            ctx.globalCompositeOperation = 'source-over'; // reset
+            ctx.globalCompositeOperation = 'source-over';
 
-            // Step C: Edge Defringe (Choke)
-            // This manually trims the light halo/fringe pixels
-            if (chokeAmount > 0) {
+            if (choke > 0) {
                 let imgData = ctx.getImageData(0, 0, width, height);
                 let data = imgData.data;
-                // Simple alpha threshold subtraction
                 for (let i = 3; i < data.length; i += 4) {
                     if (data[i] > 0 && data[i] < 255) {
-                        data[i] = Math.max(0, data[i] - (chokeAmount * 15)); 
+                        data[i] = Math.max(0, data[i] - (choke * 15));
                     }
                 }
                 ctx.putImageData(imgData, 0, 0);
             }
         }
 
-        // Download Action
         downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'perfect-bg-removed.png';
-            link.href = resultCanvas.toDataURL('image/png', 1.0); // 1.0 means Max Quality
-            link.click();
+            const a = document.createElement('a');
+            a.download = 'hd-logo-transparent.png';
+            a.href = resultCanvas.toDataURL('image/png', 1.0);
+            a.click();
         });
     </script>
 </body>
